@@ -39,7 +39,7 @@ public class Organizer {
 
     /**
      * Moving Files to <b>Images</b> directory
-     * @param imageFile
+     * @param imageFile gets already sorted image format file
      */
     private static void imageOrganizing(File imageFile) {
         Path imagePath = Path.of(IMAGES.getPath());
@@ -62,7 +62,7 @@ public class Organizer {
 
     /**
      * Moving Files to <b>Audio</b> directory
-     * @param audioFile
+     * @param audioFile gets already sorted audio format file
      */
     private static void audioOrganizing(File audioFile) {
         Path audioPath = Path.of(AUDIO.getPath());
@@ -84,7 +84,7 @@ public class Organizer {
 
     /**
      * Moving Files to <b>Text</b> directory
-     * @param textFile
+     * @param textFile gets already sorted text format file
      */
     private static void textOrganizing(File textFile) {
         Path textPath = Path.of(TEXT.getPath());
@@ -106,7 +106,7 @@ public class Organizer {
 
     /**
      * Moving Files to <b>PDFs</b> directory
-     * @param pdfFile
+     * @param pdfFile  gets already sorted PDF format file
      */
     private static void pdfOrganizing(File pdfFile) {
         Path pdfPath = Path.of(PDF.getPath());
@@ -128,7 +128,7 @@ public class Organizer {
 
     /**
      * Moving Files to <b>Videos</b> directory
-     * @param videoFile
+     * @param videoFile  gets already sorted video format file
      */
     private static void videoOrganizing(File videoFile) {
         Path videoPath = Path.of(VIDEOS.getPath());
@@ -150,7 +150,7 @@ public class Organizer {
 
     /**
      * This method detects file format and calls corresponding method to place file in accurate directory
-     * @param file
+     * @param file gets "file" and detects the format
      */
     private static void fileFormatDetector(File file) {
         String fileName = file.getName();
