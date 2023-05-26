@@ -2,27 +2,46 @@ package organizer;
 
 import java.io.*;
 import java.nio.file.*;
+import java.util.Scanner;
 
 public class Organizer {
-    private final static File ORGANIZER = new File("C:\\Users\\Serob\\Desktop\\Organizer");
 
-    private static final File AUDIO = new File("C:\\Users\\Serob\\Desktop\\Organizer\\Audio");
+    private static File ORGANIZER = new File("\\Organizer");
 
-    private static final File IMAGES = new File("C:\\Users\\Serob\\Desktop\\Organizer\\Images");
+    private static File AUDIO = new File(ORGANIZER.getPath() + "\\Audio");
 
-    private static final File PDF = new File("C:\\Users\\Serob\\Desktop\\Organizer\\PDFs");
+    private static File IMAGES = new File(ORGANIZER.getPath() + "\\Images");
 
-    private static final File TEXT = new File("C:\\Users\\Serob\\Desktop\\Organizer\\Texts");
+    private static File PDF = new File(ORGANIZER.getPath() + "\\PDFs");
 
-    private static final File VIDEOS = new File("C:\\Users\\Serob\\Desktop\\Organizer\\Videos");
+    private static File TEXT = new File(ORGANIZER.getPath() + "\\Texts");
 
-    private final static File log = new File("log.txt");
+    private static File VIDEOS = new File(ORGANIZER.getPath() + "\\Videos");
+
+    private static File log = new File("log.txt");
+
+    static {
+        boolean isTrue = true;
+        try (Scanner sc = new Scanner(System.in)) {
+            do {
+                System.out.print("Please enter correct PATH of folder/directory you want to organize:\t");
+                String path = sc.nextLine();
+                System.out.println();
+                if (Files.exists(Path.of(path))) {
+                    ORGANIZER = new File(path);
+                    isTrue = false;
+                }
+            } while (isTrue);
+        }
+
+    }
 
 
     public static void organize() {
 
         try {
             if (ORGANIZER.exists()) {
+                createDirectoryIfDoesNotExist();
                 File[] files = ORGANIZER.listFiles();
                 assert files != null;
                 for (File file : files) {
@@ -34,6 +53,48 @@ public class Organizer {
         } catch (SecurityException e) {
             throw  new RuntimeException(e);
         }
+    }
+
+    private static void createDirectoryIfDoesNotExist() {
+
+        var newAudioDir = "\\Audio";
+        var newImagesDir = "\\Images";
+        var newPdfDir = "\\PDFs";
+        var newTextDir = "\\Texts";
+        var newVideosDir = "\\Videos";
+
+        try {
+            Path path;
+
+            if (!(Files.exists(AUDIO.toPath()))) {
+                path = Path.of(ORGANIZER.getPath() + newAudioDir);
+                Files.createDirectory(path);
+                AUDIO = new File(path.toString());
+            }
+            if (!(Files.exists(IMAGES.toPath()))) {
+                path = Path.of(ORGANIZER.getPath() + newImagesDir);
+                Files.createDirectory(path);
+                IMAGES = new File(path.toString());
+            }
+            if (!(Files.exists(PDF.toPath()))) {
+                path = Path.of(ORGANIZER.getPath() + newPdfDir);
+                Files.createDirectory(path);
+                PDF = new File(path.toString());
+            }
+            if (!(Files.exists(TEXT.toPath()))) {
+                path = Path.of(ORGANIZER.getPath() + newTextDir);
+                Files.createDirectory(path);
+                TEXT = new File(path.toString());
+            }
+            if (!(Files.exists(VIDEOS.toPath()))) {
+                path = Path.of(ORGANIZER.getPath() + newVideosDir);
+                Files.createDirectory(path);
+                VIDEOS = new File(path.toString());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 
@@ -153,26 +214,24 @@ public class Organizer {
      * @param file gets "file" and detects the format
      */
     private static void fileFormatDetector(File file) {
-        String fileName = file.getName();
-        if (fileName.contains(".jpg") || fileName.contains(".png")
-                || fileName.contains(".jpeg") || fileName.contains(".gif")
-                || fileName.contains(".ico")) {
-            imageOrganizing(file);
-        } else if (fileName.contains(".txt") || fileName.contains(".doc")
-                || fileName.contains(".xml")) {
-            textOrganizing(file);
-        } else if (fileName.contains(".pdf")) {
-            pdfOrganizing(file);
-        } else if (fileName.contains(".mp3") || fileName.contains(".wav")
-                || fileName.contains(".m4a") || fileName.contains(".wma")) {
-            audioOrganizing(file);
-        } else if (fileName.contains(".mp4") || fileName.contains(".mov")
-                || fileName.contains(".wmv") || fileName.contains(".mpeg")
-                || fileName.contains(".mpg") || fileName.contains(".3gp")
-                || fileName.contains(".webm")) {
-            videoOrganizing(file);
-        } else {
-            System.out.println("The " + fileName + " has unknown format");
+        String fileType;
+
+        try {
+            fileType = Files.probeContentType(file.toPath());
+            System.out.println(fileType);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (fileType != null) {
+            String[] arr = fileType.split("/");
+            switch (arr[0]) {
+                case "video" -> videoOrganizing(file);
+                case "audio" -> audioOrganizing(file);
+                case "image" -> imageOrganizing(file);
+                case "text" -> textOrganizing(file);
+                case "application" -> pdfOrganizing(file);
+            }
         }
     }
 }
