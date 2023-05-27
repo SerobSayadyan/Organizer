@@ -6,19 +6,19 @@ import java.util.Scanner;
 
 public class Organizer {
 
-    private static File ORGANIZER = new File("\\Organizer");
+    private static File ORGANIZER = new File("");
 
-    private static File AUDIO = new File(ORGANIZER.getPath() + "\\Audio");
+    private static File AUDIO;
 
-    private static File IMAGES = new File(ORGANIZER.getPath() + "\\Images");
+    private static File IMAGES;
 
-    private static File PDF = new File(ORGANIZER.getPath() + "\\PDFs");
+    private static File PDF;
 
-    private static File TEXT = new File(ORGANIZER.getPath() + "\\Texts");
+    private static File TEXT;
 
-    private static File VIDEOS = new File(ORGANIZER.getPath() + "\\Videos");
+    private static File VIDEOS;
 
-    private static File log = new File("log.txt");
+    private final static File log = new File("log.txt");
 
     static {
         boolean isTrue = true;
@@ -33,6 +33,17 @@ public class Organizer {
                 }
             } while (isTrue);
         }
+
+        AUDIO = new File(ORGANIZER.getPath() + "\\Audio");
+
+        IMAGES = new File(ORGANIZER.getPath() + "\\Images");
+
+        PDF = new File(ORGANIZER.getPath() + "\\PDFs");
+
+        TEXT = new File(ORGANIZER.getPath() + "\\Texts");
+
+        VIDEOS = new File(ORGANIZER.getPath() + "\\Videos");
+
 
     }
 
@@ -55,6 +66,11 @@ public class Organizer {
         }
     }
 
+
+    /**
+     * This method is creating directories (Audio, Images, PDFs, Texts, Videos) if they are absent in working directory
+     * <p></p>
+     */
     private static void createDirectoryIfDoesNotExist() {
 
         var newAudioDir = "\\Audio";
@@ -68,31 +84,41 @@ public class Organizer {
 
             if (!(Files.exists(AUDIO.toPath()))) {
                 path = Path.of(ORGANIZER.getPath() + newAudioDir);
-                Files.createDirectory(path);
-                AUDIO = new File(path.toString());
+                if (!(Files.exists(path))) {
+                    Files.createDirectory(path);
+                    AUDIO = new File(path.toString());
+                }
             }
             if (!(Files.exists(IMAGES.toPath()))) {
                 path = Path.of(ORGANIZER.getPath() + newImagesDir);
-                Files.createDirectory(path);
-                IMAGES = new File(path.toString());
+                if (!(Files.exists(path))) {
+                    Files.createDirectory(path);
+                    IMAGES = new File(path.toString());
+                }
             }
             if (!(Files.exists(PDF.toPath()))) {
                 path = Path.of(ORGANIZER.getPath() + newPdfDir);
-                Files.createDirectory(path);
-                PDF = new File(path.toString());
+                if (!(Files.exists(path))) {
+                    Files.createDirectory(path);
+                    PDF = new File(path.toString());
+                }
             }
             if (!(Files.exists(TEXT.toPath()))) {
                 path = Path.of(ORGANIZER.getPath() + newTextDir);
-                Files.createDirectory(path);
-                TEXT = new File(path.toString());
+                if (!(Files.exists(path))) {
+                    Files.createDirectory(path);
+                    TEXT = new File(path.toString());
+                }
             }
             if (!(Files.exists(VIDEOS.toPath()))) {
                 path = Path.of(ORGANIZER.getPath() + newVideosDir);
-                Files.createDirectory(path);
-                VIDEOS = new File(path.toString());
+                if (!(Files.exists(path))) {
+                    Files.createDirectory(path);
+                    VIDEOS = new File(path.toString());
+                }
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println(e);
         }
 
     }
@@ -218,7 +244,6 @@ public class Organizer {
 
         try {
             fileType = Files.probeContentType(file.toPath());
-            System.out.println(fileType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
