@@ -8,15 +8,15 @@ public class Organizer {
 
     private static File ORGANIZER = new File("");
 
-    private static File AUDIO;
+    private final static File AUDIO;
 
-    private static File IMAGES;
+    private final static File IMAGES;
 
-    private static File PDF;
+    private final static File PDF;
 
-    private static File TEXT;
+    private final static File TEXT;
 
-    private static File VIDEOS;
+    private final static File VIDEOS;
 
     private final static File log = new File("log.txt");
 
@@ -44,7 +44,6 @@ public class Organizer {
 
         VIDEOS = new File(ORGANIZER.getPath() + "\\Videos");
 
-
     }
 
 
@@ -62,173 +61,67 @@ public class Organizer {
                 }
             }
         } catch (SecurityException e) {
-            throw  new RuntimeException(e);
+            throw new RuntimeException(e);
         }
     }
 
 
     /**
      * This method is creating directories (Audio, Images, PDFs, Texts, Videos) if they are absent in working directory
-     * <p></p>
      */
     private static void createDirectoryIfDoesNotExist() {
 
-        var newAudioDir = "\\Audio";
-        var newImagesDir = "\\Images";
-        var newPdfDir = "\\PDFs";
-        var newTextDir = "\\Texts";
-        var newVideosDir = "\\Videos";
+        String[] newDirs = {"\\Audio", "\\Images", "\\PDFs", "\\Texts", "\\Videos"};
+        File[] orgFiles = {AUDIO, IMAGES, PDF, TEXT, VIDEOS};
 
-        try {
-            Path path;
+        for (int i = 0; i < newDirs.length; i++) {
+            try {
+                Path path;
 
-            if (!(Files.exists(AUDIO.toPath()))) {
-                path = Path.of(ORGANIZER.getPath() + newAudioDir);
-                if (!(Files.exists(path))) {
-                    Files.createDirectory(path);
-                    AUDIO = new File(path.toString());
+                if (!(Files.exists(orgFiles[i].toPath()))) {
+                    path = Path.of(ORGANIZER.getPath() + newDirs[i]);
+                    if (!(Files.exists(path))) {
+                        Files.createDirectory(path);
+                        orgFiles[i] = new File(path.toString());
+                    }
                 }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            if (!(Files.exists(IMAGES.toPath()))) {
-                path = Path.of(ORGANIZER.getPath() + newImagesDir);
-                if (!(Files.exists(path))) {
-                    Files.createDirectory(path);
-                    IMAGES = new File(path.toString());
-                }
-            }
-            if (!(Files.exists(PDF.toPath()))) {
-                path = Path.of(ORGANIZER.getPath() + newPdfDir);
-                if (!(Files.exists(path))) {
-                    Files.createDirectory(path);
-                    PDF = new File(path.toString());
-                }
-            }
-            if (!(Files.exists(TEXT.toPath()))) {
-                path = Path.of(ORGANIZER.getPath() + newTextDir);
-                if (!(Files.exists(path))) {
-                    Files.createDirectory(path);
-                    TEXT = new File(path.toString());
-                }
-            }
-            if (!(Files.exists(VIDEOS.toPath()))) {
-                path = Path.of(ORGANIZER.getPath() + newVideosDir);
-                if (!(Files.exists(path))) {
-                    Files.createDirectory(path);
-                    VIDEOS = new File(path.toString());
-                }
-            }
-        } catch (IOException e) {
-            System.out.println(e);
         }
-
     }
 
-
     /**
-     * Moving Files to <b>Images</b> directory
-     * @param imageFile gets already sorted image format file
+     * Moving Files to <b><i>destination</i></b> directory
+     *
+     * @param sourceFile        gets source file ready for moving to destination directory (Images, Audion etc...)
+     * @param destinationOfFile gets destination directory where the <b>sourceFile</b> should be moved
      */
-    private static void imageOrganizing(File imageFile) {
-        Path imagePath = Path.of(IMAGES.getPath());
+    private static void organizingInDirectories(File sourceFile, File destinationOfFile) {
+        Path imagePath = Path.of(destinationOfFile.getPath());
 
         try {
-            Path source = imageFile.toPath();
+            Path source = sourceFile.toPath();
             Files.move(source,
                     imagePath.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-                bw.write(imageFile.getPath() + " ---> " + IMAGES.getPath() + "\n");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+
+            writeInLog(sourceFile.getPath(), destinationOfFile.getPath());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-
     /**
-     * Moving Files to <b>Audio</b> directory
-     * @param audioFile gets already sorted audio format file
+     * This method is used to write source file and destination in log.txt
+     *
+     * @param sourcePath      gets source file path
+     * @param destinationPath gets destination directory path
      */
-    private static void audioOrganizing(File audioFile) {
-        Path audioPath = Path.of(AUDIO.getPath());
-
-        try {
-            Path source = audioFile.toPath();
-            Files.move(source,
-                    audioPath.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-                bw.write(audioFile.getPath() + " ---> " + AUDIO.getPath() + "\n");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * Moving Files to <b>Text</b> directory
-     * @param textFile gets already sorted text format file
-     */
-    private static void textOrganizing(File textFile) {
-        Path textPath = Path.of(TEXT.getPath());
-
-        try {
-            Path source = textFile.toPath();
-            Files.move(source,
-                    textPath.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-                bw.write(textFile.getPath() + " ---> " + TEXT.getPath() + "\n");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * Moving Files to <b>PDFs</b> directory
-     * @param pdfFile  gets already sorted PDF format file
-     */
-    private static void pdfOrganizing(File pdfFile) {
-        Path pdfPath = Path.of(PDF.getPath());
-
-        try {
-            Path source = pdfFile.toPath();
-            Files.move(source,
-                    pdfPath.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-                bw.write(pdfFile.getPath() + " ---> " + PDF.getPath() + "\n");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-    /**
-     * Moving Files to <b>Videos</b> directory
-     * @param videoFile  gets already sorted video format file
-     */
-    private static void videoOrganizing(File videoFile) {
-        Path videoPath = Path.of(VIDEOS.getPath());
-
-        try {
-            Path source = videoFile.toPath();
-            Files.move(source,
-                    videoPath.resolve(source.getFileName()), StandardCopyOption.REPLACE_EXISTING);
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
-                bw.write(videoFile.getPath() + " ---> " + VIDEOS.getPath() + "\n");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+    private static void writeInLog(String sourcePath, String destinationPath) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(log, true))) {
+            bw.write(sourcePath + " ---> " + destinationPath + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -237,7 +130,8 @@ public class Organizer {
 
     /**
      * This method detects file format and calls corresponding method to place file in accurate directory
-     * @param file gets "file" and detects the format
+     *
+     * @param file gets file and detects the format
      */
     private static void fileFormatDetector(File file) {
         String fileType;
@@ -251,11 +145,11 @@ public class Organizer {
         if (fileType != null) {
             String[] arr = fileType.split("/");
             switch (arr[0]) {
-                case "video" -> videoOrganizing(file);
-                case "audio" -> audioOrganizing(file);
-                case "image" -> imageOrganizing(file);
-                case "text" -> textOrganizing(file);
-                case "application" -> pdfOrganizing(file);
+                case "video" -> organizingInDirectories(file, VIDEOS);
+                case "audio" -> organizingInDirectories(file, AUDIO);
+                case "image" -> organizingInDirectories(file, IMAGES);
+                case "text" -> organizingInDirectories(file, TEXT);
+                case "application" -> organizingInDirectories(file, PDF);
             }
         }
     }
